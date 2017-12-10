@@ -1,0 +1,10 @@
+Labrador
+Siberiano
+Bulldog
+Terranova
+Pug
+Pitbull
+Boxer
+Beagle
+Rottweiler
+Doberman
