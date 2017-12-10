@@ -1,0 +1,2 @@
+# dogShop
+Proyecto Sistemas Operativos
