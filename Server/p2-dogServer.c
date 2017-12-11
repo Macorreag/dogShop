@@ -503,7 +503,7 @@ unsigned long  viewDog(char * name ){
     adress =  viewLocationHead( hash );
  
     
-    printf("\n%s\n","|Nombre|--------------------------|NumeroRegistro|");
+    printf("\n%s\n","|Nombre||Tipo|||edad||raza||estatura||peso||sexo||NumeroRegistro|");
   
 
     while(adress!=0){
@@ -513,11 +513,16 @@ unsigned long  viewDog(char * name ){
         Mayus(save);
        
       if(strcmp(save,open) == 0){
+            
            printf("|%s|",temp->nombre);
-               for(i=strlen(temp->nombre);i<32;i++){
-                    printf(" ");
-               }
-           printf("|%lu|\n",numberDog(adress));
+           printf("|%s|",temp->tipo);
+           printf("|%i|",temp->edad);
+           printf("|%s|",temp->raza);
+           printf("|%i|",temp->estatura);
+           printf("|%f|",temp->peso);
+           printf("|%i|",temp->sexo);    
+           printf("|%lu|\n",numberDog(adress)); 
+           
        } 
        adress=temp->next;
     }
@@ -531,30 +536,40 @@ unsigned long   deleteDog(){ /*Eliminacion de un perro */
     remmap();
     unsigned long adress,aux,finalAdress,hashD,hashM;
     unsigned long * number=0;
-    char *  nombre;
+    char *  nombre, * deleteName;
     struct dogType * move , * delete ,* deleteCopy;
     number=malloc(sizeof(unsigned long ));
+    deleteName=malloc(sizeof(char)*32);
     
-    printf("\n\n\t\tIngrese el Numero de Registro a Eliminar:");
-    //scandigit(10,number);
-    scanf("%lu",number);
+    
+    
+    
+   finalAdress=(unsigned long)send(-2)-(unsigned long )sizeof(struct dogType); 	
+    
+    printf("\n\tLa cantidad de registros actuales es de :| %lu |\n",numberDog(finalAdress));
+     printf("\n\n\t\tIngrese el Numero de Registro a Eliminar:");
+    
+    scanf("%lu", number);
     adress=adressDog( *number );   /*Guardamos la direccion del perro a eliminar*/
-	
-	  
-	finalAdress=(unsigned long)send(-2)-(unsigned long )sizeof(struct dogType); 	
-
+    
+    	if(number < 0 || adress > finalAdress ){ 
+	  /*El perro no existe */
+	    printf("\nEl perro No existe");
+	    getch();
+	    continuar(menu);	    
+	}
+    
+    
+    
     aux = (unsigned long ) mmap_ptr + finalAdress;	
 	move = ( struct dogType * ) aux;   /*Recostruimos el perro a mover  */
 	
 	aux = (unsigned long ) mmap_ptr + adress;	
 	delete = ( struct dogType * ) aux;   /*Recostruimos el perro a eliminar */
 	
-	if(number < 0 || adress > finalAdress ){ 
-	  /*El perro no existe */
-	    printf("\nEl perro No existe");
-	    getch();
-	    continuar(menu);	    
-	}
+	strcpy(deleteName,delete->nombre);
+	
+
 	
     nombre=malloc(32*sizeof(char));
     bzero(nombre,32);
@@ -578,7 +593,9 @@ unsigned long   deleteDog(){ /*Eliminacion de un perro */
 	    updateHeadHash(hashM,adress);                      
     }
     
-    
+    if(adress == finalAdress){
+        updateTailHash(hashM,0);     /*se esta sobreescribiendo osea se "esfumo"*/
+    }else{
     updateTailHash(hashM,adress);     /*Actualizamos la cola pues sabemos que el ultimo perro SIEMPRE ES UNA COLA*/
 	    
 	
@@ -612,16 +629,17 @@ unsigned long   deleteDog(){ /*Eliminacion de un perro */
     }
 
 
-    if(searchDog(deleteCopy->previus)->next == finalAdress){
+    if(searchDog(delete->previus)->next == finalAdress){
           /*Si se va a eliminar un perro y el que se mueve va encima  */
           /***Eliminacion 3 caso especial***/  
           searchDog(deleteCopy->previus)->next=adress;
 	      delete->next=0; 
     }    
-   
+    }
+    printf("\nEl animal con registro N:%lu y de nombre: %s Ha sido eliminado Correctamente ",*number,deleteName);
     ftruncate(fileno(fp),send(finalAdress));      /*Truncamos el archivo donde este el cursor*/
     
-    printf("\nEl animal con registro N:%lu y de nombre: %s Ha sido eliminado Correctamente ",*number,delete->nombre);
+    
     
     getch();
     free(number);
