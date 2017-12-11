@@ -164,7 +164,7 @@ char * takeName() {
     bzero(nombre,32);
     printf( "Ingrese el nombre del animal: " );
     scanf("%s",nombre);
-    Mayus(nombre);
+  
     return nombre;
 }
 
@@ -190,8 +190,6 @@ strcpy(dog.nombre,takeName());
 
 printf( "Ingrese el tipo de animal: " );
 scanf("%s",dog.tipo);
-Mayus(dog.tipo);
-
 
 printf( "Ingrese la edad del animal (En Numeros): " );
 scanf("%i",&dog.edad);
@@ -232,7 +230,13 @@ unsigned long  inDog(){/*agregar NUEVO perro */
 	
 	/*FALTAN TODOS LOS DEMAS DATOS DE LA MASCOTA*/
 	printf("%s",dogPri.nombre);
-	hash=hashC(dogPri.nombre); /* llamamos al  function hash */	
+	char  aux [32];
+	bzero(aux,32);
+	//aux=malloc(32*(sizeof(char)));
+	//aux=*dogPri.nombre;
+	strcpy(aux,dogPri.nombre);
+	//aux=dogPri.nombre;
+	hash=hashC(aux); /* llamamos al  function hash */	
 	
 	adressPri=send(-2);
 	//printf("|adr:%lu|",adressPri);
@@ -304,7 +308,8 @@ unsigned long viewReg(){ /*Buscar un perro con el numero de registro */
     }
    
     reg=malloc(sizeof(unsigned long));
-    scanf("\nIngrese el Numero de Registro a Buscar:%lu",reg);
+    printf("\nIngrese el Numero de Registro a Buscar:");
+    scanf("%lu",reg);
     search=adressDog(*reg);
    
     if((endDog>=search)){
@@ -332,8 +337,9 @@ unsigned long viewReg(){ /*Buscar un perro con el numero de registro */
 unsigned long  viewDog(char * name ){ /*ver un perro con una cadena de caracteres coincidan totalmente*/
     unsigned long adress,hash;
     struct dogType * temp;
-    Mayus(name);
+    
     hash=hashC(name);
+    printf("name%s",name);
     printf("HashBusqueda:%lu\n",hash);
     adress =  viewLocationHead( hash );
  
@@ -484,8 +490,8 @@ int main(int argc, char *argv[]){
 
     char *file = "dataDogs.dat";	/*Nombre del archivo para la  comunicacion*/	
 
-/*
-      	
+
+ /*     	
     fp= fopen(file, "wb+");	
     fid = fileno(fp);		
   
@@ -517,7 +523,7 @@ fclose(fp);
 
    
 
-    
+    viewReg();
 
    // getDate();
 
@@ -532,8 +538,10 @@ fclose(fp);
 
 
 */
-    inDog();
- viewReg();
+ //   inDog();
+  //  inDog();
+   // viewDog(takeName());
+//viewReg();
   // int i=0;
   // while(i<6){
   //  inDog();
@@ -571,7 +579,7 @@ fclose(fp);
   //bzero(dog.nombre,32);
    //scanf("%s",name);
     //strcpy(dog.nombre,name);
-   //Mayus(name);
+  
    //printf("%s",name);
      //inDog(name); 
   
