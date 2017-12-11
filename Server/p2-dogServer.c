@@ -1,61 +1,51 @@
-#include<stdio.h>
-#include<stlib.h>
+#include <stdio.h>
+
+int main()
+{
+   FILE *fp; 					//Puntero al archivo 	
+   char nombre[11] = "data.dat";		//Nombre del archivo 
+   char *dinero= "a";
+   char leer[2]={'x','x'};
+   
+   unsigned int i=0;
 
 
-struct dogType {	//Informacion de un registro  
-	
-	char *name; //32 bites
-	char *type;
-  	int age;
-	char *breed;
-	int height;
-	double weight;
-	char sex;
-	struct dogtype *next; 
-};
+   	
+   fp = fopen( nombre, "wb+" ); 		//Abrimos el archivo con (Abre un fichero en modo binario para actualización (lectura y escritura))
+   printf( "Fichero: %s -> ", nombre );	
+   if( fp)			// Return true confirmacion efectiva
+      printf( "creado (ABIERTO)\n" );		
+   else
+   {
+      printf( "Error (NO ABIERTO)\n" );	// Return false confirmacion efectiva
+      return 1;				//mata el programa 	
+   }
 
-int  saveAnimal(struct dogType *Animal){
-	FILE *ap;				//Creacion Pointer Archivo
-	ap=fopen("data.dat","a+");
-		
-		
-    	if (ap == NULL){     			//validacion apertura archivo 
-       		perror("No se puede crear o abrir el archivo porque:");
-        	exit(-1);   
-    	size_t r;		}
-	r=fwrite(Animal,12345,1,ap);
-	if (r != ){     			//validacion escritura archivo 
-       		perror("No se puede escribir el archivo porque:");
-        	exit(-1);   
-    			}
-	
-		//validar escritura 
-		r=fclose(ap);
-		exit(0); 
+   printf( "Escribiendo cantidades:\n" );  //Confirmacion Escritura 
+
+
+
+   for( i=0; i<20001; i++ ){
+     //printf( "%c", dinero );		//Aviso inicio escritura
+   fwrite( dinero, sizeof(char),1, fp );	//Inicio escritura
+	//rewind( fp );   
+fflush(fp);}
+
+   printf( "\nLeyendo los datos del fichero \"%s\":\n", nombre );
+   rewind( fp ); 				//coloca el indicador de posición al comienzo del fichero
+   fread( leer, sizeof(unsigned  long), 2, fp );
+
+   for( i=0; i<20001; i++ ){
+	 fread( leer, sizeof(unsigned  long), 2, fp );
+     printf( "%c", leer[i] ); //confirmacion lectura
 }
+   if( !fclose(fp) )  // confirmacion cierre fichero
+      printf( "\nFichero cerrado\n" );		
+   else				// ERROR  cierre fichero
+   {
+      printf( "\nError: fichero NO CERRADO\n" );
+      return 1;
+   }
 
-struct Connected {
-	int index;
-	struct dogtype *next;
-	struct Connected *next;
-	
-};
-
-void printPet(dogType Animal){
-	printf("Name: %s\n",dogType.name);
-	printf("Type: %s\n",dogType.type);
-	printf("Age: %i\n",dogType.age); 
-	printf("Breed: %s\n",dogType.breed);
-	printf("Height: %i\n",dogType.height);
-	printf("Weight: %f\n",dogType.weight);
-	printf("Sex: %c\n",dogType.sex);
-};
-
-int main(){
-
-
-
-
-
-
-	}
+   return 0;
+}
