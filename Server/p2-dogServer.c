@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <termios.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
@@ -7,18 +8,22 @@
 #include <unistd.h>
 #include <string.h>
 
-#define CANT 2
-#define SIZE_HASH 10
-/*IIN THIS VERSION IT WORKS IN DOGS VERY GOOD (Y)*/
+
+#define SIZE_HASH 10000
+/*THIS VERSION  WORK VERY GOOD (Y)*/
 
 int const multiplier=263;
 long const prime =1000000007;
 
+int i, j ;
+void menu(void);
+char opcion;
+
 unsigned long head[SIZE_HASH]={0,0,0,0,0,0,0,0,0,0};  //Dimencion de nuestra tabla Hash cabezas
-//bzero(tail,10);
+//bzero(head,10);
 unsigned long tail[SIZE_HASH]={0,0,0,0,0,0,0,0,0,0};  //Dimencion de nuestra tabla Hash colas 
 //bzero(tail,10);
-
+    
 
 
 struct dogType
@@ -41,9 +46,22 @@ struct dogType
     struct dogType dog;
     
     struct dogType * dogP;
-	
-	
 
+
+	void salir()
+	{
+		
+		fclose(fp);
+		exit(0);
+	}	
+	
+    	void continuar(void (*dst)(void))
+	{
+		printf("\n\n\tPresione cualquier tecla para continuar...");
+		getch();
+		system("clear");
+		(*dst)();
+	}
 
 
 unsigned long send(long action ){
@@ -80,49 +98,31 @@ unsigned long  remmap(){
 
 
 struct dogType * searchDog(unsigned long location){
-    /*Encuentra y devuelve  el perro en la localizacion "location"*/  
-     
-  unsigned long x=(unsigned long) ((unsigned long )mmap_ptr + location); /*Movemos a la posicion del perro */	
-  struct dogType * dog = (struct dogType * ) x;/*Casteamos para acceder al perro de forma facil */   
-  return  dog;
+    /*Encuentra y devuelve  el perro en la localizacion "location"*/       
+    unsigned long x=(unsigned long) ((unsigned long )mmap_ptr + location); /*Movemos a la posicion del perro */	
+    struct dogType * dog = (struct dogType * ) x;/*Casteamos para acceder al perro de forma facil */   
+    return  dog;
   
 } 
 
-unsigned long  copyDog(struct dogType * A,struct dogType B){    /*Verificar si esta funcion es posible borrarla*/
-    /*Copia el perro A en el perro B*/
-    strcpy(B.nombre,A->nombre);
-    strcpy(B.tipo,A->tipo );
-    //strcpy(B.raza,A->raza );	    
-	B.previus = A->previus;
-	B.next = A->next;
-/**/
-    
-        
-    }
 
 unsigned long  viewLocationHead(unsigned long Hash ){
-
+    /*Retorna la posicion donde esta la cabeza de esa Hash*/
     unsigned long aux = (unsigned long ) mmap_ptr + ( 8 * Hash );
 	unsigned long * point = (unsigned long *) aux;   
     return *point;
-    
-
 } 
 unsigned long viewLocationTail(unsigned long Hash ){
-
+    /*Retorna la posicion donde esta la cola de esa Hash*/
     unsigned long aux = (unsigned long )(( mmap_ptr )+( ( 8*Hash ) + (unsigned long )sizeof(head)));
 	unsigned long * point = (unsigned long * ) aux;   
     return *point;
-
 } 
 unsigned long  updateHeadHash(unsigned long rank,unsigned long adress){
 	/*actualiza la tabla de punteros Cabeza del Hash con la ubicacion del hash"rank "*/
 	unsigned long x=(unsigned long) ((((unsigned long ) mmap_ptr+(rank*8)))); /*Movemos a la posicion del perro */	
-    unsigned long * place = (unsigned long  * ) x;/*Casteamos para acceder al perro de forma facil */ 
-	
+    unsigned long * place = (unsigned long  * ) x;/*Casteamos para acceder al perro de forma facil */ 	
 	*place=adress;	
-
-
 }
 
 
@@ -131,16 +131,14 @@ unsigned long  updateTailHash(unsigned long rank,unsigned long adress){
     unsigned long x=(unsigned long) ((unsigned long )mmap_ptr+(rank*8)+(unsigned long )(sizeof(head))); /*Movemos a la posicion del perro */	
     unsigned long * place = (unsigned long  * ) x;/*Casteamos para acceder al perro de forma facil */ 
 	*place=adress;	
-
-
 }
 
-void Mayus ( char *c ){ /*Function UpperCase*/
-
-while( *c ){ 
-     *c = toupper( *c ); 
-     c++; 
-     }  
+void Mayus ( char *c ){ 
+    /*Function UpperCase*/
+    while( *c ){ 
+        *c = toupper( *c ); 
+        c++; 
+    }  
 
 }
 unsigned long hashC(char * name) {
@@ -149,31 +147,179 @@ unsigned long hashC(char * name) {
         int i;
         for ( i= (sizeof(name)/sizeof(char)) - 1; i >= 0; --i){
             if(name[i]!='\0'&&name[i]!=0){
-            nHash = (nHash * multiplier + name[i]) % prime;
+                nHash = (nHash * multiplier + name[i]) % prime;
             }
         }
-              
         return (unsigned long )nHash % SIZE_HASH;
-              
-    }
+}
  
 
-char * takeName() {
+char * takeName() {   /*Analizar la posible eliminacion de esta funcion se usa 1 sola vez*/      
     char *  nombre;
     nombre=malloc(32*sizeof(char));
     bzero(nombre,32);
     printf( "Ingrese el nombre del animal: " );
-    scanf("%s",nombre);
-  
+    scanf("%s",nombre);  
     return nombre;
+}
+void scandigit(int length, int * number){
+	/* 
+	*  Captura valor ingresado por usuario donde sólo
+	*  permite ingresar dígitos 0-9.
+	*/
+		struct termios oldattr, newattr;
+		int ch, counter = 0;
+		char * array;
+		array = malloc(length);
+
+		tcgetattr(STDIN_FILENO, &oldattr);
+		newattr = oldattr;
+		newattr.c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+
+		do
+		{
+			ch = getchar();
+
+			if(ch == 127 && counter > 0)
+			{
+				printf("\b \b");
+				counter--;
+				array[counter] = '\0';
+			}
+
+			else if((counter < length) && (ch >= 48 && ch <= 57))
+			{
+				printf("%c", ch);
+				array[counter] = ch;
+				counter++;
+			}
+		}while(ch != 10 || array[0] == '\0');
+
+		*number = atoi(array);
+		free(array);
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+}
+
+void scanletter(int length, char * array){
+    /* 
+	*  Captura valor ingresado por usuario donde sólo
+	*  permite ingresar letras a-z, A-Z y espacio.
+	*/
+	struct termios oldattr, newattr;
+	int ch, counter = 0;
+
+	tcgetattr(STDIN_FILENO, &oldattr);
+	newattr = oldattr;
+	newattr.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+
+	do{
+        ch = getchar();
+    	if(ch == 127 && counter > 0){
+				printf("\b \b");
+				counter--;
+				array[counter] = '\0';
+		}else if( (counter < length) && ((ch == 32) ||
+				 (ch >= 65 && ch <= 90) ||
+				 (ch >= 97 && ch <= 122)) 
+                ){
+				    printf("%c", ch);
+				    array[counter] = ch;
+				    counter++;
+			    }
+        }while(ch != 10 || array[0] == '\0');
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+}
+	
+void scandecimal(int length, float * decimal)
+{
+        struct termios oldattr, newattr;
+		int ch, separator, counter = 0, flag = 0;
+		char * array;
+		array = malloc(length);
+
+		tcgetattr(STDIN_FILENO, &oldattr);
+		newattr = oldattr;
+		newattr.c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+
+		do{
+		    ch = getchar();
+			if(ch == 127 && counter > 0){
+				
+				printf("\b \b");
+				counter--;
+				array[counter] = '\0';
+
+				if((counter == separator) && (flag == 1)){
+				    flag = 0; 
+				}
+			}else if( (counter < length) && (ch >= 48 && ch <= 57) ||
+				 ((ch == 46) && (flag == 0)) 
+				 ){
+                        printf("%c", ch);
+				        array[counter] = ch;
+
+				        if(ch == 46)
+				        {
+					        flag = 1;
+					        separator = counter;
+				        }
+
+				        counter++;
+			        }
+		}while(ch != 10 || array[0] == '\0');
+
+		*decimal = atof(array);
+		free(array);
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+}
+
+void scanchar(int length, char * character, char * dictionary){
+		struct termios oldattr, newattr;
+		int ch, counter = 0;
+
+		tcgetattr(STDIN_FILENO, &oldattr);
+		newattr = oldattr;
+		newattr.c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+
+		do{
+			ch = getchar();
+
+			if(ch == 127 && counter > 0){
+			
+				printf("\b \b");
+				counter--;
+				*character = '\0';
+				
+			}
+
+			else if(counter < length){
+				for(i = 0; i < strlen(dictionary); i++)
+				{
+					if(ch == dictionary[i])
+					{
+						printf("%c", ch);
+						*character = ch;
+						counter++;
+					}
+				}
+				
+			}
+		}while(ch != 10 || character[0] == '\0');
+
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
 }
 
 
 
 
 struct dogType getData(){
-/*FALTA ALGUNAS VALIDACIONES !!!*/
-     struct dogType dog;
+    /*Recoleccion datos una  mascota*/
+    struct dogType dog;
     /*Rellenar el perro de ceros */
     bzero(dog.nombre,32); 
     bzero(dog.tipo,32); 
@@ -185,89 +331,52 @@ struct dogType getData(){
 	dog.previus=0;
     dog.next=0; 
 
-strcpy(dog.nombre,takeName());
 
+printf("\n\t--- Ingrese datos de la mascota ---");
+			printf("\n\tNombre [32 max.]:\t");		scanletter(32, dog.nombre);     /*captura nombre */
+			printf("\n\tTipo [32 max.]:\t\t");		scanletter(32, dog.tipo);    
+			printf("\n\tEdad:\t\t\t");		        scandigit(3, &dog.edad);
+			printf("\n\tRaza [16 max.]:\t\t");		scanletter(16, dog.raza);
+			printf("\n\tEstatura [cm]:\t\t");		scandigit(3, &dog.estatura);
+			printf("\n\tPeso [Kg]:\t\t");			scandecimal(6, &dog.peso);
+			printf("\n\tGénero [M/F]:\t\t");		scanchar(1, &dog.sexo, "MFmf");
 
-printf( "Ingrese el tipo de animal: " );
-scanf("%s",dog.tipo);
-
-printf( "Ingrese la edad del animal (En Numeros): " );
-scanf("%i",&dog.edad);
-
-printf( "Ingrese la raza del perro: " );
-scanf( "%s", dog.raza); 
-
-printf( "Ingrese la estatura del perro: " );
-
-scanf( "%d", &dog.estatura ); 
-
-printf( "Ingrese el peso del perro: " );
-
-scanf( "%g", &dog.peso );
-
-printf( "Ingrese el genero del perro: " );
-getchar();
-
-scanf( "%c", &dog.sexo );
-
+            
 return dog;
 
 
 }
 
 
-
-
-
-unsigned long  inDog(){/*agregar NUEVO perro */
-
-    unsigned long adressPri,adressTail,AdressHead,hash;
+unsigned long  inDog(){
+    /*agregar NUEVO perro */
+    unsigned long adressPri,adressTail,hash;
+	char  aux [32];
 	struct dogType dogPri;
-	/*Recoleccion e ingreso de una mascota*/
 	
 	/*Recolección y validación de Datos */
-	dogPri=getData(dogPri);
+	dogPri=getData(dogPri);	
 	
-	/*FALTAN TODOS LOS DEMAS DATOS DE LA MASCOTA*/
-	printf("%s",dogPri.nombre);
-	char  aux [32];
 	bzero(aux,32);
-	//aux=malloc(32*(sizeof(char)));
-	//aux=*dogPri.nombre;
 	strcpy(aux,dogPri.nombre);
-	//aux=dogPri.nombre;
 	hash=hashC(aux); /* llamamos al  function hash */	
 	
-	adressPri=send(-2);
-	//printf("|adr:%lu|",adressPri);
-	 //bzero(dogPri.nombre,32);
-    //strcpy(dogPri.nombre,name);	
-    
-	/*obtener el hash */
-	
+	adressPri=send(-2);	
 	adressTail =  viewLocationTail(hash);
 	
-	       printf("HashIngreso:%lu\n",hash);
-	       //printf(":%lutail",adressPri);
-			if( adressTail == 0 ){
+	    	if( adressTail == 0 ){			
+			    /*PRIMER Perro que ingresa*/
 			    
-				
-			    /*PRIMER Perro que ingresa*/			
 				updateHeadHash(hash,adressPri);/*ActualizoCabeza*/				
 				updateTailHash(hash,adressPri);	/*ActualizoCola*/
 				dogPri.next=0;
-				dogPri.previus=0;
-				
-				
+				dogPri.previus=0;				
 					
-			}else{	
-			
+			}else{				
 			    /*SEGUNDO o MAYOR Perro que ingresa*/
-			  	//printf(":%luhas",hash);		    
+			    			  			    
 			    searchDog( adressTail ) -> next = adressPri;/*Actualizacion apuntador que lo contiene*/
-			    
 			    dogPri.previus = adressTail;
-			    
 			    updateTailHash(hash,adressPri);	/*ActualizoCola*/
 				dogPri.next=0;
 				
@@ -275,213 +384,320 @@ unsigned long  inDog(){/*agregar NUEVO perro */
 		
 		/*Guardo el perro en el archivo*/
 		fwrite(&dogPri, sizeof(struct dogType),1, fp);
+        
 		remmap();
+		continuar(menu);
 	    return 1;	/*validar correcto 1*/
 		
-};
+}
+
 
 unsigned long numberDog(unsigned long adress){
     /*Registro con el que esta el perro */
-    adress = ( adress - (unsigned long )(sizeof(head) + sizeof(tail)) );
     
+    adress = ( adress - (unsigned long )(sizeof(head) + sizeof(tail)) );    
     return adress/(unsigned long )sizeof(struct dogType);
 }
 unsigned long adressDog(unsigned long number){
     /*Registro con el que esta el perro */
+    
     number=number*((unsigned long)(sizeof(struct dogType)));
     return (number+(unsigned long)sizeof(head)+(unsigned long)sizeof(tail));
-
 }
 
-unsigned long viewReg(){ /*Buscar un perro con el numero de registro */
-    /*Validacion que el registro existe*/
+void ver(struct dogType *  pet){	
+	 
+    char * history;
+    history = malloc(sizeof(char));      
+	       
+				printf(
+					"\n\n\t%s \n\t%s\t\t%s \n\t%s\t\t%s \n\t%s\t\t%i \n\t%s\t\t%s \n\t%s\t%i%s \n\t%s\t\t%.2f%s \n\t%s\t\t%c \n\t%s",
+					"------------ Mascota ------------",
+					"Nombre:", pet->nombre,
+					"Tipo:",pet->tipo,
+					"Edad:", pet->edad,
+					"Raza:", pet->raza, 
+					"Estatura:", pet->estatura, " cm(s)",
+					"Peso:", pet->peso, " Kg(s)",
+					"Genero:", pet->sexo    ,
+					"---------------------------------"
+				);
+          
+        
+        printf("\n\t Si desea ver la Historia Clinica presione 'S', si no presione 'N':");
+        scanchar(1, history , "SNsn");  
+        
+        if( strcmp(history,"S") == 0  || strcmp(history,"s") == 0 ){
+            system("nano history.txt");
+            free(history);            
+            continuar(menu);
+        }else{
+            free(history);            
+            continuar(menu);
+		}
+}
+
+
+
+unsigned long viewReg(){ 
+    /*Buscar un perro con el numero de registro */
+    
     unsigned long endDog,size,search,end,* reg;
-    endDog=end-(unsigned long )sizeof(struct dogType);   
-    size =(sizeof(head)+sizeof(tail));
+    //struct dogType send;    
+    struct dogType * select; 
+    int b;
+    
     end=send(-2);
-    
-    if(end<=size){
-        printf("La cantidad de registros actuales es de : 0");
-        return 2;       
-    }else{
-        printf("La cantidad de registros actuales es de : %lu |",numberDog(end));
+    endDog=end-(unsigned long )sizeof(struct dogType);  
+    size =(sizeof(head)+sizeof(tail));
+            
+    if(numberDog(end) == 1){
+            printf("\n\tNo existe ningun perro en el registro \n");
+            printf("\n\tContinue en el menu principal\n");
+            continuar(menu);
     }
-   
-    reg=malloc(sizeof(unsigned long));
-    printf("\nIngrese el Numero de Registro a Buscar:");
-    scanf("%lu",reg);
-    search=adressDog(*reg);
-   
-    if((endDog>=search)){
-    /*El perro existe */      
-        printf("Nombre:%s|°",searchDog( search )->nombre);  
-        /*IMPRESION DE LOS DEMAS DATOS DEL REGISTRO CAPTURAR EL PERRO EN VARIABLE LOCAL*/
-        
-        
-        
-        
-        free(reg);
-        return 1 ;
     
-    }else{
-    /*El perro no existe */       
-        printf("El perro no existe");
-        free(reg);
-        return 0;
-    }
+    do{
+        system("clear");
+        printf("\n\tLa cantidad de registros actuales es de :| %lu |\n",numberDog(end));
+        
+        printf("\n\n\t\tIngrese el Numero de Registro a Buscar:");    
+        scandigit(15,&b);
+        
+
+        if(b <= -1 || b > numberDog(end)-1){
+        /*Validacion que el registro existe*/
+            system("clear");
+            printf("\n%s","Ese numero de registro no existe recuerde que la cuenta de los registros es desde 0");
+            printf("\n Presione una tecla y intentelo de nuevo ");
+            getch();
+        }
+    
+    }while(b <= -1 || b > numberDog(end)-1);
+   
+    search=adressDog((unsigned long )b);
+    ver(searchDog(search));
+
 }
 
 
 
 
-unsigned long  viewDog(char * name ){ /*ver un perro con una cadena de caracteres coincidan totalmente*/
+unsigned long  viewDog(char * name ){ 
+    /*ver un perro con una cadena de caracteres coincidan totalmente*/
     unsigned long adress,hash;
     struct dogType * temp;
+    char * save, * open;
+    int i=0;
     
+    open = malloc(32 * sizeof(char));
+    bzero(open,32);
+    save = malloc(32 * sizeof(char));
+    bzero(save,32);
+    
+    Mayus(name);
+    open=name;   
     hash=hashC(name);
-    printf("name%s",name);
-    printf("HashBusqueda:%lu\n",hash);
+   
+    
     adress =  viewLocationHead( hash );
  
     
-    printf("\n%s\n","|Nombre|---|NumeroRegistro|");
-
-     
+    printf("\n%s\n","|Nombre|--------------------------|NumeroRegistro|");
+  
 
     while(adress!=0){
         temp=(searchDog( adress ));
         
-       /*FALTA  Validar la impresion solo de los que son exactamente iguales */
-           printf("|%s|",temp->nombre);    
-           printf("|%lu|\n",numberDog(adress)); 
-     
-       adress=temp->next;
+        strcpy(save,temp->nombre);
+        Mayus(save);
        
+      if(strcmp(save,open) == 0){
+           printf("|%s|",temp->nombre);
+               for(i=strlen(temp->nombre);i<32;i++){
+                    printf(" ");
+               }
+           printf("|%lu|\n",numberDog(adress));
+       } 
+       adress=temp->next;
     }
-     
- 
-   
+    getch();
+    continuar(menu);
 
 }
 
-unsigned long   deleteDog(unsigned long number ){ /*Eliminacion de un perro */
-	
-	
-	unsigned long adress,aux,finalAdress,hashD,hashM;
-    struct dogType  dogAux;	/*Guardaremos el perro a eliminar  */
-    struct dogType  dogMov; /*Guardaremos el perro a mover  */
+
+unsigned long   deleteDog(){ /*Eliminacion de un perro */
+    remmap();
+    unsigned long adress,aux,finalAdress,hashD,hashM;
+    unsigned long * number=0;
+    char *  nombre;
+    struct dogType * move , * delete ,* deleteCopy;
+    number=malloc(sizeof(unsigned long ));
     
-    
+    printf("\n\n\t\tIngrese el Numero de Registro a Eliminar:");
+    //scandigit(10,number);
+    scanf("%lu",number);
+    adress=adressDog( *number );   /*Guardamos la direccion del perro a eliminar*/
 	
-	adress=adressDog(number);   /*Guardamos la direccion del perro a eliminar*/
 	  
 	finalAdress=(unsigned long)send(-2)-(unsigned long )sizeof(struct dogType); 	
-	send(finalAdress);
+
+    aux = (unsigned long ) mmap_ptr + finalAdress;	
+	move = ( struct dogType * ) aux;   /*Recostruimos el perro a mover  */
 	
-	aux = (unsigned long ) mmap_ptr + finalAdress;	
-	struct dogType * move = ( struct dogType * ) aux;   /*Recostruimos el perro a mover  */
+	aux = (unsigned long ) mmap_ptr + adress;	
+	delete = ( struct dogType * ) aux;   /*Recostruimos el perro a eliminar */
 	
-	if(number < 0 || adress > finalAdress ){   /*El perro no existe */
-	    printf("El perro No existe");
-	    return 0;
-	    
-	    
+	if(number < 0 || adress > finalAdress ){ 
+	  /*El perro no existe */
+	    printf("\nEl perro No existe");
+	    getch();
+	    continuar(menu);	    
 	}
 	
-    copyDog(move,dogMov); /*Copiamos el perro en uno temporal */
-    dogMov=*move;
-    hashM=hashC(searchDog(finalAdress)->nombre);
-    printf("HashMove:%lu|\n",hashM);
+    nombre=malloc(32*sizeof(char));
+    bzero(nombre,32);
+    strcpy(nombre,move->nombre);
+    hashM=hashC(nombre);
+    free(nombre);
     
+    deleteCopy = malloc(sizeof(struct dogType));
     
-    
-    aux = (unsigned long ) mmap_ptr + adress;	
-	struct dogType * delete = ( struct dogType * ) aux;   /*Recostruimos el perro a eliminar */
-   
-    copyDog(delete,dogAux); /*Copiamos el perro en uno temporal */
-    dogAux=*delete;
-    
-    hashD=hashC(delete->nombre);
-    *delete=dogMov;  /*TRUCO cambiamos los datos que contiene el perro eliminado por el ultimo*/
+    *deleteCopy=*delete;
        
-    
-    printf("HashDelete:%lu|\n",hashD);
-   
-    
-    
-    
-	
-	
-	
-    if(dogMov.previus!=0){	                    /*ultimo perro a  mover no es una cabeza*/
-        printf("ultimoperroS" );
-	    searchDog(dogMov.previus)->next=adress;       /*Actualizamos la direccion del perro que contiene el perro que vamos a mover*/	    
-	    
-    }else{
-	    updateHeadHash(hashM,adress); /*Actualizamos la cabeza*/
-	    printf("%s","Actualizo cabeza");                   
-    }
-     
-	    updateTailHash(hashM,adress);     /*Actualizamos la cola pues sabemos que el ultimo perro SIEMPRE ES UNA COLA*/
-	  
-	
-	    
-
-    
-	
-	if(dogAux.previus == 0 && dogAux.next == 0){        /*Si un perro es cabeza y cola*/
-	        updateHeadHash(hashD,dogAux.next); /*Actualizamos la cabez de hash */
-	        updateTailHash(hashD,dogAux.previus); /*Actualizamos la cola de hash */
-	
+    *delete=*move;  /*TRUCO cambiamos los datos que contiene el perro eliminado por el ultimo*/
+       
+    hashD=hashC(deleteCopy->nombre);
+      
+	if(move->previus!=0){
+        /*ultimo perro a  mover no es una cabeza*/  
+        searchDog(move->previus)->next=adress;       /*Actualizamos la direccion del perro que contiene el perro que vamos a mover*/	    
 	}else{
-/*rev*/
-        if(dogAux.previus!=0 ){      /*si se va a eliminar un perro que no sea la cabeza*/
-           
-            searchDog(dogAux.next)->previus=dogAux.previus;   /*El perro siguiente se conecta con el perro anterior*/
-            printf("%s\n","este perro no es cabeza");
-        }else{
-        
-              updateHeadHash(hashD,dogAux.next); /*Actualizamos la cabez de hash */
-              searchDog(dogAux.next)->previus=0;      /*guardo en el perro que el es la cabeza*/
-               printf("%s\n","este perro es cabeza");
-        
+	    /*Actualizamos la cabeza*/
+	    updateHeadHash(hashM,adress);                      
+    }
+    
+    
+    updateTailHash(hashM,adress);     /*Actualizamos la cola pues sabemos que el ultimo perro SIEMPRE ES UNA COLA*/
+	    
+	
+	if(deleteCopy->previus == 0 && deleteCopy->next == 0){
+	/*Si un perro a eliminar es cabeza y cola*/
+	        updateHeadHash(hashD,0); /*Actualizamos la cabez de hash */
+	        updateTailHash(hashD,0); /*Actualizamos la cola de hash */
+	}else{
+
+        if(deleteCopy->previus!=0 ){
+        /*si se va a eliminar un perro que no sea la cabeza*/
+            searchDog(deleteCopy->next)->previus=deleteCopy->previus;   /*El perro siguiente se conecta con el perro anterior*/
             
+        }else{
+        /*Si este perro es cabeza*/
+            updateHeadHash(hashD,deleteCopy->next); /*Actualizamos la cabez de hash */
+            searchDog(deleteCopy->next)->previus=0;      /*guardo en el perro que el es la cabeza*/
         }
         
         
-        if(dogAux.next!=0){      /*si se va a aliminar un perro que no es la cola*/
-                
-                searchDog(dogAux.previus)->next=dogAux.next;      /*el perro anterior se conecta con el siguiente pues el de la mitad desaparace*/
-          printf("%s\n","este perro NO era una  cola");
+        if(deleteCopy->next!=0){
+        /*si se va a aliminar un perro que no es la cola*/
+            searchDog(deleteCopy->previus)->next=deleteCopy->next;/*el perro anterior se conecta con el siguiente pues el de la mitad desaparace*/
+          
         }else{
-             updateTailHash(hashD,dogAux.previus); /*Actualizamos la cola de hash */
-            searchDog(dogAux.previus)->next=0;      /*guardo en el perro que sera la cola*/
-        
-            printf("%s\n","este perro era cola");
-            
-         }
+            updateTailHash(hashD,deleteCopy->previus); /*Actualizamos la cola de hash */
+            searchDog(deleteCopy->previus)->next=0;      /*guardo en el perro que sera la cola*/
 
-}
+        }
+
+    }
 
 
-    
-    
-
-    
+    if(searchDog(deleteCopy->previus)->next == finalAdress){
+          /*Si se va a eliminar un perro y el que se mueve va encima  */
+          /***Eliminacion 3 caso especial***/  
+          searchDog(deleteCopy->previus)->next=adress;
+	      delete->next=0; 
+    }    
    
-    ftruncate(fileno(fp),send(send(-2)-sizeof(struct dogType)));      /*Truncamos el archivo donde este el cursor*/
-
+    ftruncate(fileno(fp),send(finalAdress));      /*Truncamos el archivo donde este el cursor*/
+    
+    printf("\nEl animal con registro N:%lu y de nombre: %s Ha sido eliminado Correctamente ",*number,delete->nombre);
+    
+    getch();
+    free(number);
+    continuar(menu);
     return 1;
 
 }
 
 
+/* 
+	*  Captura valor ingresado por usuario donde sólo
+	*  permite ingresar los caracteres especificados
+	*  en el diccionario.
+	*/
+	
+int getch(void){
+		struct termios oldattr, newattr;
+		int ch;
+		tcgetattr(STDIN_FILENO, &oldattr);
+		newattr = oldattr;
+		newattr.c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+		ch = getchar();
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+		return ch;
+}
+	
+void regresar(void (*src)(void), void (*dst)(void), char * message){
+		printf("\n\t%s\n\t", message);
+		scanchar(1, &opcion, "SYNsyn");
+		system("clear");
 
+		if(opcion == 'n' || opcion == 'N')
+		{ (*src)(); }
+		
+		else
+		{ (*dst)(); }
+	}
 
 static void error(char *mesg){
   perror(mesg);
   
 }
+void menu()
+	{
+		printf
+            	(
+		        "\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n\t",
+		        "1. Ingresar registro",
+		        "2. Ver registro",
+		        "3. Borrar registro",
+		        "4. Buscar registro",
+		        "5. Salir"
+            	);
+        printf("Ingrese el Numero de la opcion deseada:");
+		scanchar(1, &opcion, "12345");
+
+		if(opcion == '5')
+		{
+			regresar(&menu, &salir, "¿Desea salir del programa? [S/N]:");
+		}
+
+		else
+		{
+			system("clear");
+			switch(opcion)
+		    	{
+				case '1':        inDog();	            break;
+				case '2':        viewReg();         	break;
+				case '3':        deleteDog();	        break;
+				case '4':        viewDog(takeName());	break;
+				default:         
+				regresar(&menu, &salir, "¿Desea salir del programa? [S/N]:");
+		    	}
+		}
+	}
 
 
 
@@ -490,25 +706,6 @@ int main(int argc, char *argv[]){
 
     char *file = "dataDogs.dat";	/*Nombre del archivo para la  comunicacion*/	
 
-
- /*     	
-    fp= fopen(file, "wb+");	
-    fid = fileno(fp);		
-  
-  
-
-  if (fid < 0){			
-    fprintf(stderr,"Bad Open of file <%s>\n", file);
-    error("Failed to open mmap file, QUIT!");
-   }
-
-    fwrite(head, sizeof(head), 1, fp );
-    fwrite(tail, sizeof(tail), 1, fp );
-
-fclose(fp);
-
-      
- //*/
 
    fp= fopen(file, "rb+");	/*Apertura de Archivo !debe existir! lectura 	
 	escritura en binario*/
@@ -522,77 +719,9 @@ fclose(fp);
     }
 
    
-
-    viewReg();
-
-   // getDate();
-
-    /*	
-    int i=0;
-   
-    while(i<6510){
-    inDog("Michael");
-    printf("%i",i);
-   i++;
-   }
-
-
-*/
- //   inDog();
-  //  inDog();
-   // viewDog(takeName());
-//viewReg();
-  // int i=0;
-  // while(i<6){
-  //  inDog();
-  // i++;
-   //}
- 
- // */
- // inDog("Michael");
-//	inDog("Michael");//viewDog("Michael");
-    //printf("%lu",viewReg(1));
-    //printf("%i",deleteDog(1));
-    //
-        //viewDog("miller");
-    //viewDog("Michael");
-    //
-    //viewReg(2);    
- /* int i=0;
-  char  name[32] ;
-  while(i<7){
+    menu();
     
-    bzero(name,32);
-    scanf("%s",name);
-    inDog(name);
-    i++;
-    }
-  
-  printf("SELECCIONE UN NOMBRE DE LA LISTA");
-  scanf("%s",name);   
-        //deleteDog(64980);
-    //scanf("%s",name);
-  //*/
-  //char  name[32] ;
-  //bzero(name,32);
-  //struct dogType dog;
-  //bzero(dog.nombre,32);
-   //scanf("%s",name);
-    //strcpy(dog.nombre,name);
-  
-   //printf("%s",name);
-     //inDog(name); 
-  
-  //viewDog(takeName());
-  
-   
-  
- //deleteDog(8);
- //*/
- //viewDog(takeName());
-    //viewDog("miller\0");
-   // viewDog(dog);
-//*/
+
     if (status == -1){  
       error("Bad munmap, QUIT!");
     }
