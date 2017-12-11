@@ -135,8 +135,16 @@ unsigned long  updateTailHash(unsigned long rank,unsigned long adress){
 
 }
 
+void Mayus ( char *c ){ /*Function UpperCase*/
+
+while( *c ){ 
+     *c = toupper( *c ); 
+     c++; 
+     }  
+
+}
 unsigned long hashC(char * name) {
-           
+        Mayus(name);           
         unsigned  long nHash = 0;
         int i;
         for ( i= (sizeof(name)/sizeof(char)) - 1; i >= 0; --i){
@@ -148,17 +156,16 @@ unsigned long hashC(char * name) {
         return (unsigned long )nHash % SIZE_HASH;
               
     }
-void Mayus ( char *c ){ /*Function UpperCase*/
+ 
 
-while( *c ){ 
-     *c = toupper( *c ); 
-     c++; 
-     }  
-
-} 
-
-char * name (){
-
+char * takeName() {
+    char *  nombre;
+    nombre=malloc(32*sizeof(char));
+    bzero(nombre,32);
+    printf( "Ingrese el nombre del animal: " );
+    scanf("%s",nombre);
+    Mayus(nombre);
+    return nombre;
 }
 
 
@@ -177,10 +184,10 @@ struct dogType getData(){
 	dog.sexo='\0';
 	dog.previus=0;
     dog.next=0; 
-    
-printf( "Ingrese el nombre del animal: " );
-scanf("%s",dog.nombre);
-Mayus(dog.nombre);
+
+strcpy(dog.nombre,takeName());
+
+
 printf( "Ingrese el tipo de animal: " );
 scanf("%s",dog.tipo);
 Mayus(dog.tipo);
@@ -215,6 +222,7 @@ return dog;
 
 
 unsigned long  inDog(){/*agregar NUEVO perro */
+
     unsigned long adressPri,adressTail,AdressHead,hash;
 	struct dogType dogPri;
 	/*Recoleccion e ingreso de una mascota*/
@@ -270,9 +278,9 @@ unsigned long  inDog(){/*agregar NUEVO perro */
 
 unsigned long numberDog(unsigned long adress){
     /*Registro con el que esta el perro */
-    adress = ( adress - (sizeof(head) + sizeof(tail)) );
+    adress = ( adress - (unsigned long )(sizeof(head) + sizeof(tail)) );
     
-    return adress/sizeof(struct dogType);
+    return adress/(unsigned long )sizeof(struct dogType);
 }
 unsigned long adressDog(unsigned long number){
     /*Registro con el que esta el perro */
@@ -281,26 +289,41 @@ unsigned long adressDog(unsigned long number){
 
 }
 
-unsigned long viewReg(unsigned long  number){ /*Buscar un perro con el numero de registro */
+unsigned long viewReg(){ /*Buscar un perro con el numero de registro */
     /*Validacion que el registro existe*/
-    unsigned long endDog,size,unico;
+    unsigned long endDog,size,search,end,* reg;
+    endDog=end-(unsigned long )sizeof(struct dogType);   
     size =(sizeof(head)+sizeof(tail));
-    endDog=send(send(-2)-sizeof(struct dogType));
-    unico=adressDog(number);
-    if(send(-2)!=size&&(endDog>=unico)){
-    /*El perro existe */
+    end=send(-2);
     
-        printf("?%s°",searchDog( unico )->nombre);  
-    
-    return unico ;
+    if(end<=size){
+        printf("La cantidad de registros actuales es de : 0");
+        return 2;       
+    }else{
+        printf("La cantidad de registros actuales es de : %lu |",numberDog(end));
+    }
+   
+    reg=malloc(sizeof(unsigned long));
+    scanf("\nIngrese el Numero de Registro a Buscar:%lu",reg);
+    search=adressDog(*reg);
+   
+    if((endDog>=search)){
+    /*El perro existe */      
+        printf("Nombre:%s|°",searchDog( search )->nombre);  
+        /*IMPRESION DE LOS DEMAS DATOS DEL REGISTRO CAPTURAR EL PERRO EN VARIABLE LOCAL*/
+        
+        
+        
+        
+        free(reg);
+        return 1 ;
     
     }else{
-    /*El perro no existe */
-    
-    return 0;
+    /*El perro no existe */       
+        printf("El perro no existe");
+        free(reg);
+        return 0;
     }
-
-
 }
 
 
@@ -509,10 +532,11 @@ fclose(fp);
 
 
 */
- 
+    inDog();
+ viewReg();
   // int i=0;
   // while(i<6){
-    inDog();
+  //  inDog();
   // i++;
    //}
  
@@ -541,23 +565,23 @@ fclose(fp);
         //deleteDog(64980);
     //scanf("%s",name);
   //*/
-  char  name[32] ;
-  bzero(name,32);
+  //char  name[32] ;
+  //bzero(name,32);
   //struct dogType dog;
   //bzero(dog.nombre,32);
-   scanf("%s",name);
+   //scanf("%s",name);
     //strcpy(dog.nombre,name);
-   Mayus(name);
-   printf("%s",name);
+   //Mayus(name);
+   //printf("%s",name);
      //inDog(name); 
   
-  //viewDog(name);
+  //viewDog(takeName());
   
    
   
  //deleteDog(8);
  //*/
- viewDog(name);
+ //viewDog(takeName());
     //viewDog("miller\0");
    // viewDog(dog);
 //*/
