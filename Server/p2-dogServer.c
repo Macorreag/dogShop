@@ -13,8 +13,6 @@
 int const multiplier=263;
 long const prime =1000000007;
 
-/*mmap v5 es capaz de insertar hasta 65000 registros  en una ejecucion pero realizandolo asi la cantidad es ilimitada*/
-
 unsigned long head[SIZE_HASH]={0,0,0,0,0,0,0,0,0,0};  //Dimencion de nuestra tabla Hash cabezas
 unsigned long tail[SIZE_HASH]={0,0,0,0,0,0,0,0,0,0};  //Dimencion de nuestra tabla Hash colas 
 
@@ -25,16 +23,18 @@ struct dogType
 {
 	char nombre[32];
 	char tipo[32];
-	char raza[16];
+	//char raza[16];
 	
 	unsigned long previus;
 	unsigned long next;
+	
 };
 
     int fid,status;
     FILE *fp;		/*Puntero para crear el archivo*/
     caddr_t mmap_ptr; /*Puntero cabezera mmap*/
     struct dogType dog;
+    
     struct dogType * dogP;
 	
 	
@@ -87,7 +87,7 @@ unsigned long  copyDog(struct dogType * A,struct dogType B){
 
     strcpy(B.nombre,A->nombre);
     strcpy(B.tipo,A->tipo );
-    strcpy(B.raza,A->raza );	    
+    //strcpy(B.raza,A->raza );	    
 	B.previus = A->previus;
 	B.next = A->next;
 /**/
@@ -113,8 +113,10 @@ unsigned long viewLocationTail(unsigned long Hash ){
 } 
 unsigned long  updateHeadHash(unsigned long rank,unsigned long adress){
 	/*actualiza la tabla de punteros Cabeza del Hash con la ubicacion del hash"rank "*/
+	unsigned long x=(unsigned long) ((((unsigned long ) mmap_ptr+(rank*8)))); /*Movemos a la posicion del perro */	
+    unsigned long * place = (unsigned long  * ) x;/*Casteamos para acceder al perro de forma facil */ 
 	
-	*((unsigned long *)(mmap_ptr+rank*8))=adress;	
+	*place=adress;	
 
 
 }
@@ -122,25 +124,46 @@ unsigned long  updateHeadHash(unsigned long rank,unsigned long adress){
 
 unsigned long  updateTailHash(unsigned long rank,unsigned long adress){
 	/*actualiza la tabla de punteros del Hash con la ubicacion del hash(rank)*/
-	
-	*((unsigned long *)(mmap_ptr+(rank*8)+(unsigned long )(sizeof(head))))=adress;	
+    unsigned long x=(unsigned long) ((unsigned long )mmap_ptr+(rank*8)+(unsigned long )(sizeof(head))); /*Movemos a la posicion del perro */	
+    unsigned long * place = (unsigned long  * ) x;/*Casteamos para acceder al perro de forma facil */ 
+	*place=adress;	
 
 
 }
 
 unsigned long hashC(char * name) {
-        
+           
         unsigned  long nHash = 0;
         int i;
         for ( i= (sizeof(name)/sizeof(char)) - 1; i >= 0; --i){
+            if(name[i]!='\0'&&name[i]!=0){
             nHash = (nHash * multiplier + name[i]) % prime;
+            }
         }
-        printf("%luhash:",nHash % SIZE_HASH);
+        //printf("%luhash:",nHash % SIZE_HASH);
         
         return (unsigned long )nHash % SIZE_HASH;
+              
     }
-
-
+       /*MIGUEL HASH */
+/*unsigned long  hashC(char * str) {
+         unsigned  long * hash_number ;
+         hash_number=malloc(8);
+         *hash_number=0;
+         
+        const char * ustr;
+        ustr=(const char *) str;
+        
+        while(*ustr !='\0'){
+            *hash_number=(*hash_number*multiplier+*ustr)%prime;
+            ustr++;
+            
+        
+        }
+        *hash_number %=SIZE_HASH;
+        
+        return  * hash_number;
+}*/
 
 
 
@@ -152,15 +175,16 @@ unsigned long  inDog(char * name ){/*agregar NUEVO perro */
 	unsigned long adressPri,adressTail,AdressHead,hash;
 	struct dogType dogPri;
 	adressPri=send(-2);
-	printf("|adr:%lu|",adressPri);
+	//printf("|adr:%lu|",adressPri);
+	 bzero(dogPri.nombre,32);
     strcpy(dogPri.nombre,name);	
     
 	/*obtener el hash */
 	hash=hashC(name); /*obtuvimos el hash cero llamando a function hash */	
 	adressTail =  viewLocationTail(hash);
 	
-	       printf(":%luhish",hash);
-	       printf(":%lutail",adressPri);
+	       printf("HashIngreso:%lu\n",hash);
+	       //printf(":%lutail",adressPri);
 			if( adressTail == 0 ){
 			    
 				
@@ -175,7 +199,7 @@ unsigned long  inDog(char * name ){/*agregar NUEVO perro */
 			}else{	
 			
 			    /*SEGUNDO o MAYOR Perro que ingresa*/
-			  	printf(":%luhas",hash);		    
+			  	//printf(":%luhas",hash);		    
 			    searchDog( adressTail ) -> next = adressPri;/*Actualizacion apuntador que lo contiene*/
 			    
 			    dogPri.previus = adressTail;
@@ -200,8 +224,8 @@ unsigned long numberDog(unsigned long adress){
 }
 unsigned long adressDog(unsigned long number){
     /*Registro con el que esta el perro */
-    number=number*(sizeof(struct dogType));
-    return (number+(sizeof(head)+sizeof(tail)));
+    number=number*((unsigned long)(sizeof(struct dogType)));
+    return (number+(unsigned long)sizeof(head)+(unsigned long)sizeof(tail));
 
 }
 
@@ -235,6 +259,7 @@ unsigned long  viewDog(char * name){ /*ver un perro con una cadena de caracteres
     struct dogType * temp;
    
     hash=hashC(name);
+    printf("HashBusqueda:%lu\n",hash);
     adress =  viewLocationHead( hash );
  
     
@@ -259,56 +284,66 @@ unsigned long  viewDog(char * name){ /*ver un perro con una cadena de caracteres
 
 unsigned long   deleteDog(unsigned long number ){ /*Eliminacion de un perro */
 	
+	
 	unsigned long adress,aux,finalAdress,hashD;
-    struct dogType  dogAux;	
+    struct dogType  dogAux;	/*Guardaremos el perro a eliminar  */
+    struct dogType  dogMov; /*Guardaremos el perro a mover  */
+
 	
 	adress=adressDog(number);   /*Guardamos la direccion del perro a eliminar*/
+	  
+	finalAdress=send(-2)-(unsigned long )sizeof(struct dogType);
 	
-	finalAdress=send(-2)-sizeof(struct dogType);	
-	dogP=searchDog(send(finalAdress)); /*Capturamos dirreccion el ultimo perro */
-
+  	
+	
+     copyDog(searchDog(send(finalAdress)),dogMov); /*Copiamos el perro en uno temporal */
 	if(number < 0 || adress > finalAdress ){   /*El perro no existe */
 	    return 0;
 	}
-	    if(dogP->previus!=0){	                    /*ultimo perro a  mover no es una cabeza*/
-	    searchDog(dogP->previus)->next=adress;       /*Actualizamos la direccion del perro que contiene el perro que vamos a mover*/
-	    }else{
-	    updateHeadHash(hashC(dogP->nombre),adress); /*Actualizamos la cabeza*/
-	    printf("%s","cabeza1");                   
-	    }
-	    if(dogP->next!=0){                          /*El perro no es una cola*/
-	    searchDog(dogP->next)->previus=adress;       /*Actualizamos la direccion del perro que lo contiene a el como next */
-	    }else{
-	    updateTailHash(hashC(dogP->nombre),adress);     /*Actualizamos la cola*/
-	    printf("%s","cola1");
-	    }
+	
+	
+    if(dogMov.previus!=0){	                    /*ultimo perro a  mover no es una cabeza*/
+	    searchDog(dogMov.previus)->next=adress;       /*Actualizamos la direccion del perro que contiene el perro que vamos a mover*/
+	    
+    }else{
+	    updateHeadHash(hashC(dogMov.nombre),adress); /*Actualizamos la cabeza*/
+	    printf("%s","Actualizo cabeza");                   
+    }
+	
+	
+	    
+	    updateTailHash(hashC(dogMov.nombre),adress);     /*Actualizamos la cola pues sabemos que el ultimo perro SIEMPRE ES UNA COLA*/
+	    printf("HashMove:%lu|",hashC(dogMov.nombre));
+	
+	    
 	aux = (unsigned long ) mmap_ptr + adress;	
-	struct dogType * delete = (struct dogType*) aux;   /*Recostruimos el perro a eliminar */
-    
+	struct dogType * delete = ( struct dogType *) aux;   /*Recostruimos el perro a eliminar */
+   
     copyDog(delete,dogAux); /*Copiamos el perro en uno temporal */
 
-    *delete=*dogP;  /*TRUCO cambiamos los datos que contiene el perro eliminado por el ultimo*/
+    *delete=dogMov;  /*TRUCO cambiamos los datos que contiene el perro eliminado por el ultimo*/
        
     hashD=hashC(dogAux.nombre);
     
-    printf("//%luhash//",hashC(dogAux.nombre));
+    printf("HashMove:%lu|",hashC(delete->nombre));
 	
 	
 
-    if(dogAux.previus!=0){      /*si se va a eliminar un perro que sea la cabeza*/
-   
+    if(dogAux.previus!=0){      /*si se va a eliminar un perro que no sea la cabeza*/
+        sleep(3);
         searchDog(dogAux.next)->previus=dogAux.previus;   /*El perro siguiente se conecta con el perro anterior*/
         
     }else{
     
           updateHeadHash(hashC(dogAux.nombre),dogAux.next); /*Actualizamos la cabez de hash */
-          //searchDog(dogAux.next)->previus=0;      /*guardo en el perro que el es la cabeza*/
+          searchDog(dogAux.next)->previus=0;      /*guardo en el perro que el es la cabeza*/
            printf("%s","cabeza");
     
         
     }
     
-    if(dogAux.next!=0){      /*si se va a aliminar un perro que es la cola*/
+    
+    if(dogAux.next!=0){      /*si se va a aliminar un perro que no es la cola*/
             
             searchDog(dogAux.previus)->next=dogAux.next;      /*el perro anterior se conecta con el siguiente pues el de la mitad desaparace*/
       
@@ -328,7 +363,7 @@ unsigned long   deleteDog(unsigned long number ){ /*Eliminacion de un perro */
 
     
    
-    ftruncate(fileno(fp),send(ftell(fp)));      /*Truncamos el archivo donde este el cursor*/
+    ftruncate(fileno(fp),send(send(-2)-sizeof(struct dogType)));      /*Truncamos el archivo donde este el cursor*/
 
     return 1;
 
@@ -362,8 +397,9 @@ static void error(char *mesg){
 int main(int argc, char *argv[]){
 
     char *file = "dataDogs.dat";	/*Nombre del archivo para la  comunicacion*/	
-  
+
       	
+  	  	
     fp= fopen(file, "wb+");	/*Apertura de Archivo !debe existir! lectura escritura en binario*/
     fid = fileno(fp);		/*Descriptor del archivo*/
   
@@ -380,7 +416,11 @@ int main(int argc, char *argv[]){
 fclose(fp);
 
 
-    fp= fopen(file, "rb+");	/*Apertura de Archivo !debe existir! lectura 	
+
+      
+ 
+
+   fp= fopen(file, "rb+");	/*Apertura de Archivo !debe existir! lectura 	
 	escritura en binario*/
 
     fid = fileno(fp);		/*Descriptor del archivo*/
@@ -391,14 +431,24 @@ fclose(fp);
      error("Parent Memory Map Failed, QUIT!");
     }
 
-    
-   /*
-   int i=0;
-   while(i<3){
+   
+
+
+
+
+
+      	
+   
+
+
+
+ 
+ /*  int i=0;
+   while(i<6){
     inDog("miller");
    i++;
    }
-   */int i=0;
+ /* int i=0;
    
     while(i<65000){
     inDog("Michael");
@@ -410,15 +460,34 @@ fclose(fp);
     //printf("%lu",viewReg(1));
     //printf("%i",deleteDog(1));
     //
-    //
-    //viewDog("Miller");
+        //viewDog("miller");
+    //viewDog("Michael");
     //
     //viewReg(2);    
-    //deleteDog(64980);
-    //deleteDog(1);
-    viewDog("Michael");
-
-    if (status == -1){
+  int i=0;
+  char  name[32] ;
+  while(i<7){
+    
+    bzero(name,32);
+    scanf("%s",name);
+    inDog(name);
+    i++;
+    }
+  
+  scanf("%s",name);   
+        //deleteDog(64980);
+    //scanf("%s",name);
+    // inDog(name); 
+  viewDog(name);
+  
+   //*/
+  
+ deleteDog(2);
+ viewDog(name);
+    //viewDog("miller\0");
+    //viewDog("miller");
+//*/
+    if (status == -1){  
       error("Bad munmap, QUIT!");
     }
 
