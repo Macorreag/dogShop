@@ -11,6 +11,10 @@ https://drive.google.com/a/unal.edu.co/file/d/0B3320U5m5SLbajVtMFBMcktlc2c/view?
 
 Se debe generar el archivo en el cual realizar la busqueda;este puede superar el tamaño de 1Gb.
 
+Explicacion de como usar la Hash+ Linkked List
+https://youtu.be/tx1GqgbsDmI
+https://youtu.be/eUaHUsWpn8U
+
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
