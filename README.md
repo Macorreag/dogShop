@@ -33,7 +33,8 @@ Compile el programa mediante
 ```
 gcc -o hola hola.c 
 
-## compila el programa en C hola.c, gener un archivo ejecutable hola.
+## c```
+Compila el programa en C hola.c,*C*  llamado hola.c  luego gener un archivo ejecutable hola.
 
 ## corralo con 
 
@@ -126,5 +127,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNDgzNjQ0ODRdfQ==
+eyJoaXN0b3J5IjpbLTExNTE3NDc0NzcsLTIwNDgzNjQ0ODRdfQ
+==
 -->
