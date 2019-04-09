@@ -25,17 +25,18 @@ Mediante los siguientes comandos :
 
 Compile el programa mediante 
 
-```
-gcc -o hola hola.c 
-```
+    gcc -o hola hola.c
+
+ 
 es equivalente a 
 
-    gcc hola.c
+    gcc hola.c -o hola
 
 Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera un archivo ejecutable llamado *hola*
 
-## corralo con 
 
+## Ejecución
+Para ejecutar el programa creado simplemente cuando est
 ./hola
 ```
 
@@ -125,5 +126,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExMTc1OTc0NywtMjA0ODM2NDQ4NF19
+eyJoaXN0b3J5IjpbMTQyMDA5NDE0NCwtMjA0ODM2NDQ4NF19
 -->
