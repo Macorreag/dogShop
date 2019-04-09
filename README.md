@@ -36,11 +36,9 @@ Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera
 
 
 ## Ejecución
-Para ejecutar el programa creado simplemente cuando est
-./hola
-```
+Para ejecutar el programa creado simplemente abra un terminal en el directorio y ejecute
 
-
+    ./hola
 1 ->Generador de perros 
 2 ->Server
 3 ->Client
@@ -126,5 +124,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQyMDA5NDE0NCwtMjA0ODM2NDQ4NF19
+eyJoaXN0b3J5IjpbLTE3MDMyNDcwNTEsLTIwNDgzNjQ0ODRdfQ
+==
 -->
