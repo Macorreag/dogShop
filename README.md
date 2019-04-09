@@ -39,7 +39,7 @@ Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera
 Para ejecutar el programa creado simplemente abra un terminal en el directorio y ejecute
 
     ./hola
-1 ->Generador de perros 
+strong text1 ->Generador de perros 
 2 ->Server
 3 ->Client
 4 ->makeFile
@@ -124,6 +124,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MDMyNDcwNTEsLTIwNDgzNjQ0ODRdfQ
-==
+eyJoaXN0b3J5IjpbLTEzNjYyNjQ3NTEsLTE3MDMyNDcwNTEsLT
+IwNDgzNjQ0ODRdfQ==
 -->
