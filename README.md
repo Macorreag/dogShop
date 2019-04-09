@@ -28,7 +28,11 @@ Compile el programa mediante
 ```
 gcc -o hola hola.c 
 ```
-Compila el programa escrito en hola.c con el compilador  , **C**  llamado hola.c  luego genera un archivo ejecutable llamado hola
+es equivalente a 
+
+    gcc hola.c
+
+Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera un archivo ejecutable llamado *hola*
 
 ## corralo con 
 
@@ -121,6 +125,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5ODUyMzc4NzQsLTIwNDgzNjQ0ODRdfQ
-==
+eyJoaXN0b3J5IjpbMTExMTc1OTc0NywtMjA0ODM2NDQ4NF19
 -->
