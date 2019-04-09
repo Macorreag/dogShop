@@ -23,18 +23,12 @@ Genere el archivo dataDogs.dat con el uso de los archivos razas.txt y nombres.tx
 
 Mediante los siguientes comandos :
 
-
-```
-Give examples
-```
-
 Compile el programa mediante 
 
 ```
 gcc -o hola hola.c 
-
-## c```
-Compila el programa en C hola.c,*C*  llamado hola.c  luego gener un archivo ejecutable hola.
+```
+Compila el programa escrito en hola.c con el compilador  , **C**  llamado hola.c  luego genera un archivo ejecutable llamado hola
 
 ## corralo con 
 
@@ -127,6 +121,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Inspiration
 * etc
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNTE3NDc0NzcsLTIwNDgzNjQ0ODRdfQ
+eyJoaXN0b3J5IjpbLTE5ODUyMzc4NzQsLTIwNDgzNjQ0ODRdfQ
 ==
 -->
