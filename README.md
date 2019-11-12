@@ -5,6 +5,9 @@ El proyecto intenta desarrollar un archivo de busquedas rapidas mediante la impl
 
 ## Getting Started
 
+## Requerimientos del proyecto
+https://github.com/capedrazab/os-20192
+
 Modelo del Trabajo,acceso solo con cuenta de la Universidad Nacional de Colombia.
 https://drive.google.com/a/unal.edu.co/file/d/0B3320U5m5SLbajVtMFBMcktlc2c/view?usp=sharing
 
@@ -15,6 +18,8 @@ Explicacion de como usar la Hash+ Linkked List
 https://youtu.be/tx1GqgbsDmI
 https://youtu.be/eUaHUsWpn8U
 
+## Optimizaciones 
+Se usa Mmap para 
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
