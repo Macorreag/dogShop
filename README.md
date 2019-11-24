@@ -21,10 +21,26 @@ https://youtu.be/eUaHUsWpn8U
 ## Optimizaciones 
 Se usa Mmap para 
 
-##Cracteristicas
-Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes cracteristicas
+## Caracteristicas
+Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes caracteristicas
+
+  `struct Data{
+   char nombre 20[];
+   int edad;
+  }`
+  
+Acceso a atributos en C:
+
+Data d;
+Data\* pd = &d;
+
+*Dos formas para acceder a datos de la estructura*
+(\*pd).edad =23;
+pd->edad =23;
 
 
+
+jdjek
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
