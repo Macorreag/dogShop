@@ -21,6 +21,10 @@ https://youtu.be/eUaHUsWpn8U
 ## Optimizaciones 
 Se usa Mmap para 
 
+##Cracteristicas
+Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes cracteristicas
+
+
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
