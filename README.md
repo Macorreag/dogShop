@@ -23,11 +23,12 @@ Se usa Mmap para
 
 ## Caracteristicas
 Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes caracteristicas
-
-  `struct Data{
+```cpp
+  struct Data{
    char nombre 20[];
    int edad;
-  }`
+  }
+```
   
 Acceso a atributos en C:
 
