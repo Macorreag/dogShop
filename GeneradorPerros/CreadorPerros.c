@@ -9,7 +9,9 @@
 #include <unistd.h>
 #include <string.h>
 
-/*Execute in terminal With Bucle for */
+/*Se esta trabajando en usar la sobreescritura de un archivo ya generado, pero
+hace falta revisar la  estructura de la lista hash y si el archivo existe o no 
+entre otros este generador solo genera 65000 registros */
 /*for i in {1..154};do ./creador;done*/
 
 #define CANT 65000
@@ -273,20 +275,36 @@ int main(int argc, char *argv[]){
     int i=0;
 
     fp= fopen(file, "wb+");	
+    // Siempre reinicia el archivo no permite introducir mas
+    // borrara el archivo si ya existe
     fid = fileno(fp);		
      
     if (fid < 0){			
         fprintf(stderr,"Bad Open of file <%s>\n", file);
         error("Failed to open mmap file, QUIT!");
     }
+
+    //  Working for use whatever file
+
+    //aqui intentamos poder sobreescribir el archivo [aún no implementado]
+
+    // fseek(fp, 0L, SEEK_END);
+    // long sz = ftell(fp);
+
+    // if(sz < sizeof(head) ){
+    //     bzero(head,SIZE_HASH);         
+    //     bzero(tail,SIZE_HASH);
+    // }
+    
     bzero(head,SIZE_HASH);         
     bzero(tail,SIZE_HASH);
-    
+
+
     fwrite(head, sizeof(head), 1, fp );     
     fwrite(tail, sizeof(tail), 1, fp );
 
 
-    fp= fopen(file, "rb+");	
+    // fp= fopen(file, "rb+");	
 
     fid = fileno(fp);		 
     
