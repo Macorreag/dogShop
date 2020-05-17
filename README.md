@@ -24,14 +24,16 @@ Modelo del Trabajo,acceso solo con cuenta de la Universidad Nacional de Colombia
 https://drive.google.com/a/unal.edu.co/file/d/0B3320U5m5SLbajVtMFBMcktlc2c/view?usp=sharing
 
 
-Se debe generar el archivo en el cual realizar la busqueda;este puede superar el tamaño de 1Gb.
+**Makefile**
+ - Se debe generar el archivo en el cual realizar la busqueda;este puede superar el tamaño de 1Gb y se puede hacer mediante el Makefile
+ - Tambien se generan mediante este archivo los ejecutables
 
 Explicacion de como usar la Hash+ Linkked List
 https://youtu.be/tx1GqgbsDmI
 https://youtu.be/eUaHUsWpn8U
 
 ## Optimizaciones 
-Se usa Mmap para 
+Se usa Mmap para optimizar la busqueda en disco duro
 
 ## Caracteristicas
 ## Propiedades que contiene un registro
@@ -55,13 +57,18 @@ Este proyecto permite almacenar en disco estructuras de tipo Struct en un archiv
   
 Acceso a atributos en C:
 
+
+
+**Dos formas para acceder a datos de la estructura**
+
+```
+//Con el apuntador y metodo
 Data d;
 Data\* pd = &d;
-
-*Dos formas para acceder a datos de la estructura*
-(\*pd).edad =23;
-pd->edad =23;
-
+(\*pd).edad = 23;
+// Mediante Arrow
+pd -> edad = 23;
+```
 
 
 jdjek
