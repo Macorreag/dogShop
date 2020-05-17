@@ -5,6 +5,18 @@ El proyecto intenta desarrollar un archivo de busquedas rapidas mediante la impl
 
 ## Getting Started
 
+# Menu de petShop
+
+Las funcionalidades que este programa puede ejecutar sobre un documento de texto plano que se encuentra en disco y no en RAM son:
+
+- **Ver Registro :** A el número proporcionado le aplica la función Hash y luego muestra la LinkedList asociada a este.
+- **Borrar Registro :** Corta el último registro y reemplaza el numero de registro que se proporciono.
+- **Buscar Registro :** Ir con el número mostrado en el ver.
+
+
+
+
+
 ## Requerimientos del proyecto
 https://github.com/capedrazab/os-20192
 
@@ -22,13 +34,24 @@ https://youtu.be/eUaHUsWpn8U
 Se usa Mmap para 
 
 ## Caracteristicas
-Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes caracteristicas
+## Propiedades que contiene un registro
+
+Este proyecto permite almacenar en disco estructuras de tipo Struct en un archivo de texto plano con las siguientes caracteristicas, el registro almacenado dentro del documento posee las siguientes celdas:
+
 ```cpp
-  struct Data{
-   char nombre 20[];
-   int edad;
-  }
+    //Information of a Pet
+    char nombre[32];
+    char tipo[32];
+    int edad;
+    char raza [16];
+    int estatura;
+    double peso;
+    char sexo;
+    // This fields to manage LinkedList
+    unsigned long next;
+    unsigned long previus
 ```
+
   
 Acceso a atributos en C:
 
@@ -69,6 +92,37 @@ strong text1 ->Generador de perros
 2 ->Server
 3 ->Client
 4 ->makeFile
+
+
+
+## Cabezera de inicio del archivo
+
+El archivo posee una cabezera de tamaño reducido con el objetivo de manejar mas efectivamente 
+
+
+## Función para el control del apuntador dentro del archivo
+
+Esta función altera el lugar donde se esta apuntando a realizar modificaciones en el archivo ```dataDogs.dat```
+
+```c
+    //Envia el apuntador al ininio del archivo
+    send(1);
+    //Envia el apuntador a donde indica position
+    send(position);
+    //Envia el apuntador al final del archivo
+    send(-2);
+```
+
+
+## Caracteristicas de una eliminación
+- El elemento es cabeza de una LinkedList
+- El elemento esta en la mitad de una LinkedList
+- El elemnto es una cola de una LinkedList
+
+
+
+
+
 
 
 
