@@ -4,5 +4,8 @@
 *.log
 #Archivo generado por generador perros 
 dataDogs.dat
+# ignorar executable creación
+creador
 #Ignorar el directorio de construcción del proyecto aun no se a dirigido a este lugar la compilacion
 build/
+

@@ -86,15 +86,14 @@ Compile el programa mediante
 ```c
     gcc -o creador CreadorPerros.c 
 
-    //cree un archivo asi
-
-    touch dataDogs.dat
-
     //Ejecute el creador varias veces
 
-    for i in {1..154};do ./creador;done
+    ./creador
 ```
 
+Obtendra un archivo ```dataDogs.dat``` con la estructura de archivos necesario y la tabla hash implementada.
+
+**El generador no funciona**
 
 
 
