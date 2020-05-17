@@ -75,20 +75,27 @@ jdjek
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
+
+
 Genere el archivo dataDogs.dat con el uso de los archivos razas.txt y nombres.txt al ejecutar el creadorPerros.c
 
 Mediante los siguientes comandos :
 
 Compile el programa mediante 
 
-    gcc -o hola hola.c
+```c
+    gcc -o creador CreadorPerros.c 
 
- 
-es equivalente a 
+    //cree un archivo asi
 
-    gcc hola.c -o hola
+    touch dataDogs.dat
 
-Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera un archivo ejecutable llamado *hola*
+    //Ejecute el creador varias veces
+
+    for i in {1..154};do ./creador;done
+```
+
+
 
 
 ## Ejecución
