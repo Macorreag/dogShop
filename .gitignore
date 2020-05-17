@@ -1,0 +1,4 @@
+#Ignorar los accesos directos que crea Google Drive
+*.ini
+#Ignorar el directorio de construcción del proyecto aun no se a dirigido a este lugar la compilacion
+build/
