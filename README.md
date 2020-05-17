@@ -80,7 +80,7 @@ Compile el programa mediante
 es equivalente a 
 
     gcc hola.c -o hola
-
+    
 Compila el programa escrito en *hola.c* con el compilador **GCC** , luego genera un archivo ejecutable llamado *hola*
 
 

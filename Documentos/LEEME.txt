@@ -1,0 +1,32 @@
+p1-dogProgram version 10.0 17/03/2017
+
+NOTAS GENERALES DE USO
+-----------------------
+
+-Esta aplicacion gestiona la informacion de animales en una veterinaria.
+
+-Al ejecutar la aplicacion, verá el siguiente menú:
+
+1. INGRESAR REGISTRO. Al ingresar pide uno a uno, los campos de un registro.
+    ->Si teclea caracteres no validos estos nos os incluye el programa 
+
+2. VER REGISTRO. Al ingresar muestra el numero de registros presentes y solicita el numero del registro a ver. Valida que el numero sea valido.
+
+3. BORRAR REGISTRO. Al ingresar muestra el numero de registros presentes y solicita el numero del registro a borrar. El registro es borrado del archivo, por lo que el archivo reduce su tamaño.
+    ->Tenga en cuenta especificar un numero valido recuerde que la cantidad expresada en la primera linea de esta opcion exhibe la cantidad de      registros pero internamente la cuenta de los registros es llevada desde 0 por tanto el maximo es NumeroMostrado-1 
+
+4. BUSCAR REGISTRO.Solicita una cadena de caracteres a buscar en los campos nombre de los registros. Muestra todos los registros que coincidan COMPLETAMENTE con el nombre. No se distingue entre mayusculas y minusculas.
+
+5. SALIR. Termina la ejecucion del programa.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+Ejecutado bajo ubuntu 14.04
+----------------------------
+La aplicacion no requiere instalacion, y esta implementada bajo el lenguaje de programacion de C.
+==================================================================================================
+
+Informacion de contacto:
+
+MillerAlexanderCorreaGonzalez E-MAIL: macorreag@unal.edu.co
+
+free Software forever

@@ -1,4 +1,8 @@
 #Ignorar los accesos directos que crea Google Drive
 *.ini
+#Log del servidor
+*.log
+#Archivo generado por generador perros 
+dataDogs.dat
 #Ignorar el directorio de construcción del proyecto aun no se a dirigido a este lugar la compilacion
 build/

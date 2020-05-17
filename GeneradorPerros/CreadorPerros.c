@@ -271,7 +271,7 @@ int main(int argc, char *argv[]){
     tipos = fopen("tipos.txt","r");
     razas = fopen("razas.txt","r");
     int i=0;
-/*
+
     fp= fopen(file, "wb+");	
     fid = fileno(fp);		
      
@@ -285,7 +285,7 @@ int main(int argc, char *argv[]){
     fwrite(head, sizeof(head), 1, fp );     
     fwrite(tail, sizeof(tail), 1, fp );
 
-*/
+
     fp= fopen(file, "rb+");	
 
     fid = fileno(fp);		 
