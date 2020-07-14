@@ -81,18 +81,16 @@ Genere el archivo dataDogs.dat con el uso de los archivos razas.txt y nombres.tx
 
 Mediante los siguientes comandos :
 
-Compile el programa mediante 
+Compile el programa usando el _Makefile_ mediante:
 
-```c
-    gcc -o creador CreadorPerros.c 
+```{r, engine='bash', count_lines}
+    make dataDogs
 
-    //cree un archivo asi
+    //esto creara un archivo con 65000 registros para que pueda realizar la busqueda rapida.
 
-    touch dataDogs.dat
+    //Si desea mas registros ejecute el creador varias veces
 
-    //Ejecute el creador varias veces
-
-    for i in {1..154};do ./creador;done
+    for i in {1..154};do ./GeneradorPerros/creador.runner;done
 ```
 
 
@@ -135,8 +133,12 @@ Esta función altera el lugar donde se esta apuntando a realizar modificaciones 
 
 
 
+### Carpetas Limpias
 
-
+[x] GeneradorPerros
+[ ] Practica1
+[ ] Practica2
+[ ] Documentos
 
 
 

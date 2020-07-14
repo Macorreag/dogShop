@@ -270,8 +270,17 @@ int main(int argc, char *argv[]){
 
     char *file = "dataDogs.dat";	/*Nombre del archivo con los perros*/	
     nombres = fopen("nombresMascotas.txt","r");
+    if (nombres == NULL) {
+        perror("Error");
+    }
     tipos = fopen("tipos.txt","r");
+    if (tipos == NULL) {
+        perror("Error");
+    }
     razas = fopen("razas.txt","r");
+    if (razas == NULL) {
+        perror("Error");
+    }
     int i=0;
 
     fp= fopen(file, "wb+");	
@@ -281,7 +290,7 @@ int main(int argc, char *argv[]){
      
     if (fid < 0){			
         fprintf(stderr,"Bad Open of file <%s>\n", file);
-        error("Failed to open mmap file, QUIT!");
+        perror("Failed to open mmap file, QUIT!");
     }
 
     //  Working for use whatever file
@@ -313,7 +322,7 @@ int main(int argc, char *argv[]){
     
     
     if (mmap_ptr == MAP_FAILED){
-     error("Parent Memory Map Failed, QUIT!");
+     perror("Parent Memory Map Failed, QUIT!");
     }     
     
     for(i=0;i<CANT;i++){
